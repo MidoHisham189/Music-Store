@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2> Genre</h2>
+
+
+
+    <p id="SelectedNumber"></p>
+    <div class=" row">
+
+        <div class="col-md-4">
+            <ul id="link-list"></ul>
+        </div>
+
+        <div class="col-md-8">
+           <div id="albums">
+
+           </div> 
+        </div>
+
+        
+    </div>
+
+
+
+
+
+
+@section scripts{
+<script>
+    $(document).ready(function () {
+
+
+        $list = $('#link-list');
+
+        $.ajax({
+            type: 'GET',
+            url: '/MusicStore/Browse',
+            contentType: "application/json",
+            data: {
+                name: 'Rock'
+            },
+            success: function (data) {
+                $('#albums').html(data);
+            }
+
+
+        });
+
+
+
+
+        $.ajax({
+
+            type: 'Get',
+            url: '/api/Store',
+            success: function (data) {
+                $('#SelectedNumber').text("Select from " + data.length + " genres");
+
+                $.each(data, function (index, val) {
+                    $list.append(" <li class='list-group-item genre' genre-name=" + val.Name + ">" + val.Name + " </li>");
+                });
+            }
+
+        });
+
+        var $genreAlbum = $('.genre-album');
+
+        $("ul").on('click', "li.genre", function () {
+            $.ajax({
+                type: 'GET',
+                url:'/MusicStore/Browse',
+                contentType: "application/json",
+                data: {
+                    name: $(this).attr('genre-name')
+                },
+                success: function (data) {
+                    $('#albums').html(data);
+                }
+
+
+            });
+        });
+
+    });
+
+</script>
+
+}

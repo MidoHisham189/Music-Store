@@ -1,0 +1,123 @@
+﻿@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Shopping Cart</h2>
+
+
+<div id="shopping-div">
+    <table class="table table-bordered table-hover tableToClick" id="tabelShop">
+        <tr>
+            <td> Album Name</td>
+            <td> Album Price</td>
+            <td> Count</td>
+            <td> Remove</td>
+
+        </tr>
+
+    </table>
+
+    <div>
+        <label>Total</label>
+        <label id="total"></label>
+    </div>
+</div>
+
+@section scripts{
+   <script>
+
+    if ('@User.Identity.GetUserName()' === '') {
+
+
+        $.ajax({
+
+            type: 'Get',
+            url: '/Account/Login',
+
+            success: function (data) {
+                $('#shopping-div').html(data);
+            }
+
+
+        });
+    }
+
+    else {
+        $.ajax({
+
+            type: 'Get',
+            url: '/api/ShoppingCart/GetShopping',
+            data: {
+                CartId: '@User.Identity.GetUserName()'
+            },
+
+            success: function (data) {
+                if (data.length === 0) {
+                    $('#shopping-div').html('<p>Your Shopping Cart is Empty</p>')
+                }
+                else {
+                    $.each(data, function (index, val) {
+                        $('#tabelShop').append("<tr class='trCl' id='row-" + val.Album.AlbumId + "'> <td>" + val.Album.Title + "</td> <td>" + val.Album.Price + "</td> <td id='itemCount-" + val.Album.AlbumId + "'>" + val.Count + "</td> <td class='btnTo'> <button class='btn btn-danger cl' Album-Id=" + val.Album.AlbumId + "> Remove </button> </td> <tr>")
+
+                    });
+                }
+                
+            }
+
+        });
+        Total();
+        $('.tableToClick').on('click', '.trCl > .btnTo  > button.cl ', function (event) {
+
+            var AlbumId = $(this).attr('Album-Id');
+
+            $.ajax({
+
+                type: 'Get',
+                url: '/api/ShoppingCart/RemoveFromCart',
+                data: {
+                    AlbumId: $(this).attr('Album-Id'),
+                    CartId: '@User.Identity.GetUserName()'
+                   },
+
+                   success: function (data) {
+                       if (data === 0) {
+                           $('#row-' + AlbumId).fadeOut('slow');
+                           Total();
+                       }
+                       else {
+                           $('#itemCount-' + AlbumId).text(data);
+                           Total();
+                       }
+                   }
+
+               });
+
+               event.stopImmediatePropagation()
+
+           });
+
+
+       }
+
+
+
+
+
+       function Total() {
+           $.ajax({
+
+               type: 'Get',
+               url: '/api/ShoppingCart/Total',
+               data:{
+                   CartId: '@User.Identity.GetUserName()'
+               },
+               success: function (data) {
+                   $('#total').text(data);
+               }
+
+
+           });
+       }
+    </script>
+}

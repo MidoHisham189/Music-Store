@@ -1,0 +1,79 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "Details";
+}
+
+<div id="detail-div">
+    <h2 detial-id=@ViewBag.id id="detials-id">Album detail</h2>
+
+    <div class="row" id="album-detial">
+
+    </div>
+
+</div>
+
+
+
+@section scripts{
+    <script>
+    $(document).ready(function () {
+
+        $.ajax({
+            type: 'Get',
+            url: '/api/Store',
+            data: {
+                id: $('#detials-id').attr('detial-id')
+            },
+            success: function (data) {
+                $('#album-detial').append("<label> Album Name : </label> " + data.Title + " <br> <label> Artist Name :  </label>" + data.Artist.Name + " <br/> <label> Album Price :  </label>" + data.Price + " <br/> <br/> <button id=btnAddToCart class='btn btn-success btnAdd'> Add Album To Cart </button>")
+            }
+
+        });
+
+        $('.row').on('click', 'button.btnAdd', function () {
+            if ('@User.Identity.GetUserName()' === '') {
+
+                $.ajax({
+
+                    type: 'Get',
+                    url: '/Account/Login',
+                    
+                    success: function (data) {
+                        $('#detail-div').html(data);
+                    }
+
+
+                });
+            }
+            else {
+
+                $.ajax({
+
+                    type: 'Get',
+                    url: '/api/ShoppingCart/AddToCart',
+                    data: {
+                        AlbumId: $('#detials-id').attr('detial-id'),
+                        CartId: '@User.Identity.GetUserName()'
+                    }
+
+                });
+
+                $.ajax({
+
+                    type: 'Get',
+                    url: '/ShoppingCart/Index',
+                    success: function (data) {
+                        $('#detail-div').html(data);
+                    }
+
+                });
+
+            }
+               
+            event.stopImmediatePropagation()
+
+
+        });
+    });
+    </script>
+}

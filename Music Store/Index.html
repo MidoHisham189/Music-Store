@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <h3>Browse Genre</h3>
+    <p id="SelectedNumber"></p>
+    <div id="link-list">
+        
+
+
+    </div>
+  
+</body>
+</html>
+<script src="Scripts/jquery-1.10.2.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $list = $('#link-list');
+        $.ajax({
+
+            type: 'Get',
+            url: 'api/Store',
+            success: function (data) {
+                $('#SelectedNumber').text("Select from " + data.length + " genres");
+
+                $.each(data, function (index, val) {
+                    $list.append("<ul class='list-group'> <li class='list-group-item'> <a href=# >" + val.Name + " </a> </li> </ul>");
+                });
+            }
+
+        })
+
+    });
+</script>

@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Browse";
+}
+
+<div id="album-details">
+    <h2 genre-name=@ViewBag.Name id="genre-header">Browse @ViewBag.Name</h2>
+
+    <div class="row" id="album-browse"></div>
+</div>
+
+
+
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            var $genreHeader = $('#genre-header').attr("genre-name");
+
+            $.ajax({
+                type: 'Get',
+                url: '/api/Store/',
+                data: {
+                    Name: $genreHeader
+                },
+                success: function (data) {
+
+                    $.each(data.Albums, function (index, val) {
+
+                        $('#album-browse').append(
+                       "<div class='col-md-3 col-sm-3 col-xs-12 image-main-section'> <div class='row img-part'> <div class='col-md-12 col-sm-12 colxs-12 img-section'> <img src='https://dummyimage.com/200x150/000/ebecf5.png&text=++++image+++'></div> <div class='col-md-12 col-sm-12 col-xs-12 image-title'><h3>" + val.Title + "</h3> </div> <div class='col-md-12 col-sm-12 col-xs-12 image-description'><p>Lorem ipsum dolor sed do eiusmod tempor incididunt ut labore et ...</p> </div> <div class='col-md-12 col-sm-12 col-xs-12 end'><a href='#' class='btn btn-success add-cart-btn' album-id =" + val.AlbumId + ">Details</a></div></div></div>"
+
+                   );
+                    });
+
+                }
+            });
+
+
+            $('.row').on('click', '.image-main-section > .img-part > .end > .add-cart-btn', function (event) {
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/MusicStore/Details',
+                    contentType: "application/json",
+                    data: {
+                        id: $(this).attr('album-id')
+                    },
+                    success: function (data) {
+                        $('#album-details').html(data);
+                    }
+                });
+                event.stopImmediatePropagation()
+
+            });
+
+        });
+    </script>
+}
+

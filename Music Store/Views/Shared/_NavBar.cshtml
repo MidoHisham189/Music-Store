@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNet.Identity
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @Html.ActionLink("Music Store", "Index", "MusicStore", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                <li>@Html.ActionLink("About", "About", "Home")</li>
+                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                <li  style="color:white;"> <a href='/ShoppingCart/Index'> Cart(<label id="CartCount"></label>) </a></li>
+            </ul>
+            @Html.Partial("_LoginPartial")
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+
+  <script>
+
+    $(document).ready(function () {
+        if('@User.Identity.GetUserName()' === ''){
+            $('#CartCount').text(0);
+
+    }
+    else {
+              $.ajax({
+
+    type: 'Get',
+    url: '/api/ShoppingCart/Count',
+    data: {
+        CartId: '@User.Identity.GetUserName()'
+    },
+    success: function (data) {
+        $('#CartCount').text(data);
+    }
+
+
+    });
+    }
+
+
+
+    });
+
+
+    </script>
